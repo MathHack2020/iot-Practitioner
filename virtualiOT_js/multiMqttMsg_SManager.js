@@ -19,7 +19,7 @@ const {
    *********************************************************/
   const AWS_DEFAULT_REGION = process.env.AWS_DEFAULT_REGION || 'us-east-1';
   const IOT_END_POINT = process.env.IOT_END_POINT || 'xxxxxxxxx-ats.iot.us-east-1.amazonaws.com';
-  const SECRET_NAME = process.env.SECRET_NAME || 'iot/cert/prod';
+  const SECRET_NAME = process.env.SECRET_NAME || 'iot/certs/prod';
   
   // We'll map device IDs to sensor types so that each device always uses the same sensor type.
   const deviceSensorMap = {};
@@ -33,14 +33,14 @@ const {
   
   // Function to generate the sensor value based on the sensor type
   function generateSensorValue(sensorType) {
+    let value;
     if (sensorType === "Temperature") {
-      // Random temperature value between -10 and 100
-      return (Math.random() * 110 - 10).toFixed(2);
+        value = Math.random() * 110 - 10;
     } else {
-      // Random pressure value between 1 and 100 Bar
-      return (Math.random() * 100 + 1).toFixed(2);
+        value = Math.random() * 100 + 1;
     }
-  }
+    return parseFloat(value.toFixed(2)); // Convert to float after toFixed
+}
   
   /*********************************************************
    * MAIN FUNCTION
@@ -53,7 +53,7 @@ const {
       // 1) Retrieve your certificates from Secrets Manager
       const secretsClient = new SecretsManagerClient({ region: AWS_DEFAULT_REGION });
       const response = await secretsClient.send(
-        new GetSecretValueCommand({ SecretId: SECRET_NAME })
+        new GetSecretValueCommand({ SecretId:SECRET_NAME })
       );
   
       let secretString= response.SecretString;
