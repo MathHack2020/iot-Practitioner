@@ -5,13 +5,13 @@ from typing import Dict, List
 from uuid import uuid4
 
 # Replace these with your actual property IDs from IoT SiteWise
-POWER_OUTPUT_PROPERTY_ID = "23ef9177-41a0-4705-9b59-a05fe49a9779"
-BLADE_ROTATION_PROPERTY_ID = "0302bab5-d47d-4ee5-9ce4-74b91af3da48"
+POWER_OUTPUT_PROPERTY_ID = "1660fba4-bf0f-4686-a5f1-4eda005fa236"
+BLADE_ROTATION_PROPERTY_ID = "4208f5bc-274d-4b5c-8eee-81a7ad5efe94"
 
 # Replace these with the IoT SiteWise asset IDs for each of your wind turbines
 WIND_TURBINE_ASSET_IDS = [
-    "abefd94f-bc3d-443a-aece-157b5faeaf76",
-    "55fd5905-aecf-4b75-9d93-79305c19423a"
+    "99ea7070-9b27-4fb7-8056-6404a7cc5c83",
+    "d2337be6-10c2-49c5-b16e-d4f58c16fddd"
 ]
 
 
