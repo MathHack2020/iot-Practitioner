@@ -1,10 +1,10 @@
 const awsIot = require('aws-iot-device-sdk');
-const AWS_DEFAULT_REGION = process.env.AWS_DEFAULT_REGION || 'us-east-1';
-const IOT_END_POINT = process.env.IOT_END_POINT || 'xxxxxxxxx-ats.iot.us-east-1.amazonaws.com';
+const AWS_DEFAULT_REGION =  'us-east-1';
+const IOT_END_POINT =  'a3l9efh9x9pqsn-ats.iot.us-east-1.amazonaws.com' || process.env.IOT_END_POINT ;
 const device = awsIot.device({
-    keyPath: '../.certs/iOTest_PrivateKey.pem',        // Path to your private key
-    certPath: '../.certs/iOTest_Cert.pem',             // Path to your certificate
-    caPath: '../.certs/AmazonRootCA.pem',        // Path to AWS Root CA
+    keyPath: '../.certs/IoT-private.pem',        // Path to your private key
+    certPath: '../.certs/IoT-cert.pem.crt',             // Path to your certificate
+    caPath: '../.certs/AmazonRootCA1.pem',        // Path to AWS Root CA
     clientId: 'iOTestID',            // Device client ID
     host: `${IOT_END_POINT}`  // .iot.${region}.amazonaws.com`   AWS IoT endpoint
 });

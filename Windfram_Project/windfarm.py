@@ -14,23 +14,22 @@ WIND_TURBINE_ASSET_IDS = [
     "d2337be6-10c2-49c5-b16e-d4f58c16fddd"
 ]
 
-
 class WindTurbine:
     def __init__(self, asset_id: str):
         self.asset_id = asset_id
-        # Initialize random values, rounded to 2 decimals
-        self.power_output = round(random.uniform(200.0, 1000.0), 2)  # kW
-        self.blade_rotation = round(random.uniform(5.0, 15.0), 2)    # rpm
+        # Initialize values, rounding to 2 decimals for blade_rotation, integer for power_output
+        self.power_output = round(random.uniform(200.0, 1000.0))  # kW, integer
+        self.blade_rotation = round(random.uniform(5.0, 15.0), 2)  # rpm, with decimals
 
     def update_readings(self):
-        """Randomly adjust power_output and blade_rotation, rounding to 2 decimals."""
-        delta_power = random.uniform(-10.0, 10.0)
-        self.power_output = max(self.power_output + delta_power, 0.0)
-        self.power_output = round(self.power_output, 2)
+        """Randomly adjust power_output and blade_rotation."""
+        delta_power = round(random.uniform(-10.0, 10.0))  # Integer delta for power_output
+        self.power_output = max(self.power_output + delta_power, 0)
+        self.power_output = round(self.power_output)  # Ensure integer
 
-        delta_rpm = random.uniform(-0.5, 0.5)
+        delta_rpm = random.uniform(-0.5, 0.5)  # Decimal delta for blade_rotation
         self.blade_rotation = max(self.blade_rotation + delta_rpm, 0.0)
-        self.blade_rotation = round(self.blade_rotation, 2)
+        self.blade_rotation = round(self.blade_rotation, 2)  # Keep 2 decimals
 
     def build_sitewise_entries(self) -> List[Dict]:
         """
@@ -40,38 +39,35 @@ class WindTurbine:
         current_time = int(time.time())
 
         power_output_entry = {
-            "entryId": str(uuid4()),
-            "assetId": self.asset_id,
-            "propertyId": POWER_OUTPUT_PROPERTY_ID,
-            "propertyValues": [{
-                "value": {"doubleValue": self.power_output},
-                "timestamp": {"timeInSeconds": current_time},
-            }],
+        "entryId": str(uuid4()),
+        "assetId": self.asset_id,
+        "propertyId": POWER_OUTPUT_PROPERTY_ID,
+        "propertyValues": [{
+            "value": {"integerValue": int(self.power_output)},  # Ensure integer
+            "timestamp": {"timeInSeconds": current_time},
+        }],
         }
 
         blade_rotation_entry = {
-            "entryId": str(uuid4()),
-            "assetId": self.asset_id,
-            "propertyId": BLADE_ROTATION_PROPERTY_ID,
-            "propertyValues": [{
-                "value": {"doubleValue": self.blade_rotation},
-                "timestamp": {"timeInSeconds": current_time},
-            }],
-        }
+        "entryId": str(uuid4()),
+        "assetId": self.asset_id,
+        "propertyId": BLADE_ROTATION_PROPERTY_ID,
+        "propertyValues": [{
+            "value": {"integerValue": int(self.blade_rotation)},  # Changed to integerValue
+            "timestamp": {"timeInSeconds": current_time},
+        }],}
 
         return [power_output_entry, blade_rotation_entry]
 
     def to_json_dict(self) -> Dict:
         """
-        Returns a simple dictionary showing the asset ID
-        and the latest readings in the desired format.
+        Returns a simple dictionary showing the asset ID and the latest readings.
         """
         return {
             "ASSET_ID_": self.asset_id,
             "POWER_OUTPUT": self.power_output,
             "BLADE_ROTATION": self.blade_rotation
         }
-
 
 def main():
     client = boto3.client('iotsitewise')
@@ -95,20 +91,20 @@ def main():
             # Build the short JSON structure you want to print
             log_entries.append(turbine.to_json_dict())
 
-        # 1. Print the JSON you want to see (only once per loop)
-        #    Example format for multiple turbines: 
-        #    [
-        #       { "ASSET_ID_": "...", "POWER_OUTPUT": 123.45, "BLADE_ROTATION": 6.78 },
-        #       { "ASSET_ID_": "...", "POWER_OUTPUT": 987.65, "BLADE_ROTATION": 9.01 }
-        #    ]
+        # 1. Print the JSON you want to see
         print(json.dumps(log_entries, indent=2))
 
         # 2. Send data to IoT SiteWise
-        client.batch_put_asset_property_value(entries=all_entries)
+        try:
+            response = client.batch_put_asset_property_value(entries=all_entries)
+            print("API response:", response)
+            if 'errorEntries' in response:
+                print("Errors:", response['errorEntries'])
+        except Exception as e:
+            print(f"Error sending data to IoT SiteWise: {e}")
 
         # Wait for next iteration
         time.sleep(5)
-
 
 if __name__ == "__main__":
     main()
