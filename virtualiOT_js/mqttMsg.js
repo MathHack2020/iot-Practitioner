@@ -1,11 +1,13 @@
+process.env.AWS_IOT_DEVICE_SDK_LOG_LEVEL = 'debug';
+const path = require('path');
 const awsIot = require('aws-iot-device-sdk');
-const AWS_DEFAULT_REGION =  'us-east-1';
-const IOT_END_POINT =  'a3l9efh9x9pqsn-ats.iot.us-east-1.amazonaws.com' || process.env.IOT_END_POINT ;
+const AWS_DEFAULT_REGION = process.env.AWS_DEFAULT_REGION || 'us-east-1';
+const IOT_END_POINT = process.env.IOT_END_POINT || 'xxxxxxxxx-ats.iot.us-east-1.amazonaws.com';
 const device = awsIot.device({
-    keyPath: '../.certs/oTDevice.private.key',        // Path to your private key
-    certPath: '../.certs/IoTDevice.cert.pem',             // Path to your certificate
-    caPath: '../.certs/AmazonRootCA1.pem',        // Path to AWS Root CA
-    clientId: 'iOTDevice',            // Device client ID
+     keyPath: path.join(__dirname, '../.certs/iotThingDemo.private.key'),
+    certPath: path.join(__dirname, '../.certs/iotThingDemo.cert.pem'),
+    caPath: path.join(__dirname, '../.certs/root-CA.crt'),     // Path to AWS Root CA
+    clientId: 'iOTestID',            // Device client ID
     host: `${IOT_END_POINT}`  // .iot.${region}.amazonaws.com`   AWS IoT endpoint
 });
 // Store a mapping between device_id and sensor_type
